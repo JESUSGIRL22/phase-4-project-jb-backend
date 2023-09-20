@@ -1,18 +1,22 @@
 Rails.application.routes.draw do
-  get 'applications/new'
-  get 'applications/create'
-  get 'sessions/new'
-  get 'sessions/create'
-  get 'sessions/destroy'
-  get 'jobs/index'
-  get 'jobs/new'
-  get 'jobs/create'
-  get 'jobs/show'
-  get 'jobs/destroy'
-  get 'users/new'
-  get 'users/create'
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  root 'jobs#index'
 
-  # Defines the root path route ("/")
-  # root "articles#index"
+  # Define routes for Sessions (Login/Logout)
+  get '/login', to: 'sessions#new', as: 'login'
+  post '/login', to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy', as: 'logout'
+
+  # Define routes for Users
+  resources :users, only: [:new, :create]
+
+  # Define routes for Jobs
+  resources :jobs, except: [:destroy] # You may not need a destroy action for jobs
+
+  # Define routes for Applications
+  resources :applications, only: [:new, :create]
+
+  # You can remove the manual get routes for jobs, as they are covered by resources :jobs above.
+
+  # Other routes go here if needed...
+
 end
