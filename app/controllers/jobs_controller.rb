@@ -1,38 +1,22 @@
-class JobsController < ApplicationController
-  before_action :require_login, except: [:index, :show]
-
-  # ...
-
-  def index
-    @jobs = Job.all
-  end
-
-  def new
-    @job = Job.new
-  end
-
-  def create
-    @job = current_user.jobs.build(job_params)
-    if @job.save
-      redirect_to @job, notice: 'Job was successfully created.'
-    else
-      render 'new'
-    end
-  end
-
-  def show
-    @job = Job.find(params[:id])
-  end
-
-  def destroy
-    @job = Job.find(params[:id])
-    @job.destroy
-    redirect_to jobs_path, notice: 'Job was successfully deleted.'
-  end
+class ApplicationController < ActionController::Base
+  protect_from_forgery with: :exception
+  before_action :require_login
 
   private
 
-  def job_params
-    params.require(:job).permit(:title, :description)
+  def require_login
+    unless logged_in?
+      flash[:error] = "You must be logged in to access this page."
+      redirect_to login_path # You can adjust the redirection path as needed
+    end
   end
+
+  def logged_in?
+    !!current_user
+  end
+
+  def current_user
+    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+  end
+  helper_method :current_user
 end
